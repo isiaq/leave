@@ -46,6 +46,7 @@ Route::group(['middleware' => ['auth', 'is_user']], function () {
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/doleave', 'LeaveController@index')->name('leave');
+Route::get('/mail/{id}', 'LeaveController@mail')->name('mail');
 Route::post('/doleave', 'LeaveController@doleave')->name('doleave');
 
 Route::get('/leaveform-page', 'TheUsers\leaveformController@index');

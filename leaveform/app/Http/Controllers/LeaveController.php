@@ -12,6 +12,9 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\sendUser;
 
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+
 class LeaveController extends Controller
 {
 
@@ -21,50 +24,81 @@ class LeaveController extends Controller
         return view('users.leave_form');
     }
 
-    function doleave(Request $req)
+    public static function calculateDays($start, $end) {
+        $workingDays = [1, 2, 3, 4, 5]; // Work days (in week)
+        $holidayDays = [
+            '*-12-25', 
+            '*-12-26',
+            '*-01-01',
+            // Add Sallah and others: yyyy-mm-dd
+        ];  // Holidays array, add desired dates to this array 
+        $period = CarbonPeriod::create($start, $end);
+
+        $days = 0;
+        $holidays = [];
+        foreach ($period as $date) {
+            $free_day = !in_array($date->format('N'), $workingDays) || 
+                in_array($date->format('Y-m-d'), $holidayDays) || 
+                in_array($date->format('*-m-d'), $holidayDays);
+            if ($free_day) {
+                $holidays[] = $date->format('Y-m-d');
+                continue;
+            }
+            $days++;
+        }
+        $holidays_string = join(',', $holidays);
+        return [$days, $holidays_string];
+    }
+
+    public function doleave(Request $req)
     {
-        /*print_r($req->input());*/
-        $user = new Leave;
-        $user->user_id = auth()->user()->id;
-        $user->days = $req->days;
-        $user->type = $req->type;
-        $user->start = $req->start;
-        $user->phonegit  = $req->phone;
-        $user->reason = $req->reason;
-        $user->address = $req->address;
-        $user->holidays = $req->holidays;
+        $leave = new Leave;
+        $leave->user_id = auth()->user()->id;
+        $leave->type = $req->leavetype;
+        $leave->start = $req->start;
+        $leave->end = $req->end;
+        $leave->phone  = $req->phone;
+        $leave->reason = $req->reason;
+        $leave->address = $req->address;
+        $leave->holidays = $req->holidays;
 
-        $user->decl_sig ='approved';
-        $user->super_sig = 'pending';
-        $user->hod_sig = 'pending';
-        $user->hr_sig = 'pending';
+        $leave->decl_sig ='approved';
+        $leave->super_sig = 'pending';
+        $leave->hod_sig = 'pending';
+        $leave->hr_sig = 'pending';
+        $leave->status = 'pending';
 
-        $data = [
-            'name' => auth()->user()->name,
-        ];
+        [$days, $holidays] = self::calculateDays($leave->start, $leave->end);
+        $leave->holidays = $holidays;
+        $leave->days = $days;
+        $leave->sent = false;
+        $leave->save();
+        Alert::success('Submitted', 'Leave form successfully submitted');
+        return $this->mail($leave->id);
+    }
 
-        $val = 'supervisor';
-        $val2 = auth()->user()->department;
+    public function mail($id)
+    {
 
-        $abc = User::where('usertype', $val)
-                            ->where('department', $val2)
-                            ->get(['email']);
-        // TODO: Continue
         $hostname = "www.google.com";
         $port = 80;
-
         $con = @fsockopen($hostname, $port);
-
         if (!$con) {
-            Alert::error('Email not Sent', 'Please check your internet connection');
-            return redirect('/home');
+            Alert::error('Email Error', 'Please check Internet connection');
         } else {
-            $user->save();
-            foreach ( $abc as $xyz ) {
-            Mail::to("$xyz->email")->send(new sendUser($data)); }
+            $leave = Leave::findOrFail($id);
+            $data = ['name' => auth()->user()->name];
+            $dept = auth()->user()->department;
+            // TODO: Update to use supervisor_id on User model
+            $sup = User::query()
+                ->where('usertype', 'supervisor')
+                ->where('department', $dept); // No supervisors for HODs
+            foreach ($sup as $s ) {
+                Mail::to("$xyz->email")->send(new sendUser($data));
+            }
+            $leave->sent = true;
+            $leave->save();
         }
-
-        Alert::success('Submitted', 'The Form is Successfully Submitted');
         return redirect('/home');
     }
 

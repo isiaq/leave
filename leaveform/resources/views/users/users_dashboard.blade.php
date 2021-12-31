@@ -42,6 +42,10 @@
                     <span>{{ auth()->user()->name }}!</span>
                 </h1>
                 <hr class="line-seprate">
+                <p>
+                    You have used <strong>{{ $used }}</strong> leave days 
+                    out of <strong>{{ $entitled }}</strong> 
+                    with <strong>{{ $available }}</strong> left.</p>
             </div>
         </div>
     </div>

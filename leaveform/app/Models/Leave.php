@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Log;
 
-class Leave
+class Leave extends Model
 {
     use HasFactory;
 
@@ -18,6 +20,7 @@ class Leave
         'days', // leave days
         'type', // enum?
         'start',
+        'sent',
         'end',// compute days from start - end
         'phone',
         'reason',
@@ -32,35 +35,40 @@ class Leave
         'hod_sig','hod_date','hod_name','hod_email',
         // Group Head, Human Resources
         'hr_sig','hr_date','hr_name','hr_email',
-        // Approved?
-        'status'
+        // ? approved | pending | cancelled
+        'status' // <- determines days available
     ];
 
-    protected $appends = [
-        'end', 
-        'return',
-    ];
-
-    public function getEndAttribute() {
-        return $this->start->copy()->addDays($this->days);
-    }
+    protected $appends = [];
 
     public function getReturnAttribute() {
         return $this->start->copy()->addDays($this->days + 1);
     }
 
     public function getValidAttribute() { // True if enough days for leave
-        $available = $this->available();
+        $available = $this->available;
         return ($this->status == 'approved') || ($this->days <= $available);
     }
 
-    public function getAvailableAttribute() {
-        $year = $this->start->year;
-        $days = Leave::where('user_id', $this->user_id)
-        ->whereYear('start', $year)
+    public function getAvailableAttribute() { // Days left
+        return self::available($this->user_id, $this->start->year);
+    }
+
+    public static function available($user_id, $year) { // Days left
+        $used = Leave::used($user_id, $year);
+        $user = User::findOrFail($user_id);
+        $entitled = $user->entitled;
+        Log::info("Entitled days: {$entitled} for User ID {$user_id}.");
+        $available = $entitled - $used;
+        return $available;
+    }
+
+    public static function used($user_id, $year) {
+        $days = Leave::where('user_id', $user_id)
+        ->whereYear('start', (string)$year)
         ->where('status', 'approved')
         ->sum('days');
-        Log::info("Available days: {$days}.");
+        Log::info("Used days: {$days} for User ID {$user_id}.");
         return $days;
     }
 
@@ -78,7 +86,7 @@ class Leave
      */
     protected $casts = [
         'end' => 'date',
+        'sent' => 'boolean',
         'start' => 'date',
-        'status' => 'boolean',
     ];
 }

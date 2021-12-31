@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\theleaveformModel;
+use App\Models\Leave;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,12 +14,17 @@ use App\Images;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $theleaveform = theleaveformModel::all()->count();
+
+        $year = 2022; // Carbon::today()->year;
+        $user_id = auth()->user()->id;
+        $available_leave = Leave::used($user_id, (string)$year);
 
         $val = 'approved';
         $val2 = 'pending';
@@ -33,6 +39,7 @@ class DashboardController extends Controller
         $theleaveform4 = DB::table('users')->count();
 
         return view('admin.admin_dashboard')
+            ->with('available', $available_leave)
             ->with('theleaveform', $theleaveform)
             ->with('theleaveform2', $theleaveform2)
             ->with('theleaveform3', $theleaveform3)

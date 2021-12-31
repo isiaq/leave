@@ -70,7 +70,7 @@
                                 <i class="fas fa-tachometer-alt"></i>Dashboard</a>
                         </li>
                         <li class="{{ Request::is('leaveform-page*') ? 'active' : '' }}">
-                            <a href="/leaveform-page">
+                            <a href="/doleave">
                                 <i class="fas fa-list-alt"></i>Leaveform</a>
                         </li>
                         <li class="{{ Request::is('users_approved*') ? 'active' : '' }}">
@@ -107,8 +107,8 @@
                             <a href="/home">
                                 <i class="fas fa-tachometer-alt"></i>Dashboard</a>
                         </li>
-                        <li class="{{ Request::is('leaveform-page*') ? 'active' : '' }}">
-                            <a href="/leaveform-page">
+                        <li class="{{ Request::is('doleave*') ? 'active' : '' }}">
+                            <a href="/doleave">
                                 <i class="fas fa-list-alt"></i>Leaveform</a>
                         </li>
                         <li class="{{ Request::is('users_approved*') ? 'active' : '' }}">

@@ -11,3 +11,6 @@
  c. write it directly.
     window.token = {{ csrf_token() }}
     window.console.log("the token is", token.abc)
+
+2. TODO:
+a: aggregate leave taken by year [given previous applications].

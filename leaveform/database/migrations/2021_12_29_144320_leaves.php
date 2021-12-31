@@ -19,6 +19,7 @@ class Leaves extends Migration
             $table->integer('days');
             $table->string('type')->default('annual');
             $table->date('start');
+            $table->boolean('sent');
             $table->date('end');
             $table->string('phone')->nullable();
             $table->string('reason')->nullable();

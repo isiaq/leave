@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+use Illuminate\Support\Facades\Log;
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -55,6 +57,8 @@ class User extends Authenticatable
             'officer' => 21,
             'junior' => 18,
         ];
-        return $dict[$this->cadre] ?? 0;
+        $cadre = $this->cadre;
+        Log::info("User cadre: {$cadre}.");
+        return $dict[$cadre] ?? 0;
     }
 }

@@ -37,7 +37,7 @@
                     <p class="italic">2. Staff should not proceed on leave<span class="bold"> UNTIL</span>they have received Approval Coupon from HR Department</p>
                 </div><br class="m-hidden"/>
                 <div id="date">
-                    <input type="date" class="numValues" name="date" >
+                    <input type="date" class="numValues" name="date">
                 </div><br class="m-hidden"/><br class="m-hidden"/>
             </div>
         </header>
@@ -111,10 +111,9 @@
                 </div><br class="m-hidden"/>
 
                 <div>
-                    <label for="days">Leave Days</label> <br class="m-hidden"/>
-                    <input type="number" class="numValues" name="days" id="days">
+                    <label for="end">Leave Ends</label> <br class="m-hidden"/>
+                    <input type="date" class="numValues" name="end" id="end">
                 </div><br class="m-hidden"/>
-
             </div><br class="m-hidden"/>
 
 
