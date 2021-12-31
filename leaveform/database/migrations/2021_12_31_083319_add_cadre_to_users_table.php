@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddshifttousersTable extends Migration
+class AddCadreToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +14,9 @@ class AddshifttousersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
+            //
             $table->string('cadre')->default('officer');
             $table->string('shift')->default('morning');
-            $table->string('StaffID');
         });
     }
 
@@ -28,9 +28,10 @@ class AddshifttousersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('cadre')->nullable();
-            $table->dropColumn('shift')->nullable();
-            $table->dropColumn('StaffID')->nullable();
+            $table->dropColumn('shift');
+        });
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('cadre');
         });
     }
 }

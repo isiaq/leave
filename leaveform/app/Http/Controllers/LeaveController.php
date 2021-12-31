@@ -17,6 +17,7 @@ class LeaveController extends Controller
 
     public function index()
     {
+        // TODO: Limit form days max to available
         return view('users.leave_form');
     }
 
@@ -39,7 +40,7 @@ class LeaveController extends Controller
         $user->hr_sig = 'pending';
 
         $data = [
-            'name' => auth()->user->name,
+            'name' => auth()->user()->name,
         ];
 
         $val = 'supervisor';
@@ -55,21 +56,17 @@ class LeaveController extends Controller
         $con = @fsockopen($hostname, $port);
 
         if (!$con) {
-          Alert::error('Email not Sent', 'Please check your internet connection');
-          return redirect('/home');
+            Alert::error('Email not Sent', 'Please check your internet connection');
+            return redirect('/home');
         } else {
             $user->save();
             foreach ( $abc as $xyz ) {
             Mail::to("$xyz->email")->send(new sendUser($data)); }
         }
 
-
         Alert::success('Submitted', 'The Form is Successfully Submitted');
         return redirect('/home');
     }
-
-
-
 
 
 }

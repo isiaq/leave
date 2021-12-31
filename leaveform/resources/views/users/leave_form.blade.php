@@ -13,7 +13,7 @@
 
 <div class="desktop moblie">
 <main class="container">
-    <form class="form-container" method="POST" action="{{url('doleave'}}">
+    <form class="form-container" method="POST" action="{{url('doleave')}}">
         @csrf
         <header>
 
@@ -78,7 +78,7 @@
                     </div>
 
                     <div class="form-group c5">
-                        <label for="shift">Department</label>
+                        <label for="shift">Shift</label>
                         <input type="text" value="{{ auth()->user()->shift }}" class="maxWidth"
                             name="shift" id="shift" readonly/>
                     </div>

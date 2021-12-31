@@ -17,7 +17,8 @@ class Leave
         'user_id',
         'days', // leave days
         'type', // enum?
-        'start', // compute end from start + days
+        'start',
+        'end',// compute days from start - end
         'phone',
         'reason',
         'address', // contact address
@@ -76,6 +77,7 @@ class Leave
      * @var array
      */
     protected $casts = [
+        'end' => 'date',
         'start' => 'date',
         'status' => 'boolean',
     ];

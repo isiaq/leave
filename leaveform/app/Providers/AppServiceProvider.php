@@ -27,7 +27,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // Laravel wahala: https://github.com/laravel/framework/issues/35241
+        $app_url = \Config::get('app.url');
+        $check = strstr($app_url, 'https://');
+        \URL::forceRootUrl($app_url);
+        if($check) \URL::forceScheme('https');
+
         Schema::defaultStringLength(191);
     }
 }

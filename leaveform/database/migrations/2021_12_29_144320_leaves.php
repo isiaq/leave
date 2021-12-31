@@ -13,13 +13,13 @@ class Leaves extends Migration
      */
     public function up()
     {
-        //
         Schema::create('leaves', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->integer('days');
             $table->string('type')->default('annual');
             $table->date('start');
+            $table->date('end');
             $table->string('phone')->nullable();
             $table->string('reason')->nullable();
             $table->string('address')->nullable();
@@ -55,7 +55,6 @@ class Leaves extends Migration
      */
     public function down()
     {
-        //
         Schema::dropIfExists('leaves');
     }
 }
